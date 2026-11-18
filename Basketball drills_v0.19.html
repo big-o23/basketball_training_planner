@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Basketball drill runner</title>
+<style>
+:root{--bg:#f1f1f3;--card:#fff;--fg:#1d1d1f;--mut:#5c5c63;--line:#d8d8dc;--hd:#34353a;--hdfg:#fff;--ac:#d1202a;--acfg:#fff;--soft:#fbeaeb;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141415;--card:#212124;--fg:#f1f1f3;--mut:#a8a8b0;--line:#3a3a3f;--hd:#26272b;--hdfg:#fff;--ac:#e5343c;--acfg:#fff;--soft:#2e2022;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141415;--card:#212124;--fg:#f1f1f3;--mut:#a8a8b0;--line:#3a3a3f;--hd:#26272b;--hdfg:#fff;--ac:#e5343c;--acfg:#fff;--soft:#2e2022;color-scheme:dark}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 210px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.45 "Trebuchet MS","Segoe UI",system-ui,sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--hd)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--hd);color:var(--hdfg);padding:10px 16px 12px;box-shadow:0 2px 0 var(--ac)}
+.hd{max-width:760px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.num{font:700 clamp(2.2rem,10vw,4.2rem)/1 "Bahnschrift","DIN Alternate","Arial Narrow","Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.01em}
+.lbl{font-size:.8rem;opacity:.8;margin-bottom:2px}
+.tm{text-align:right}
+.tm .num{font-size:clamp(1.4rem,6.5vw,2.4rem);color:#ff6b70}
+.ctl{display:flex;gap:6px;justify-content:flex-end;margin-top:6px}
+button{font:inherit;cursor:pointer;border-radius:8px;border:1px solid transparent;padding:7px 12px;font-weight:700}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--ac);outline-offset:2px}
+.b1{background:var(--ac);color:var(--acfg)}
+.b2{background:transparent;color:inherit;border-color:currentColor}
+main{max-width:760px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:1.15rem;margin:4px 0 12px}
+h2{font-size:1.1rem;margin:28px 0 10px}
+.cat{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+summary{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;cursor:pointer;font-weight:700;font-size:1.05rem;background:var(--soft);list-style:none}
+summary::-webkit-details-marker{display:none}
+.cn{font-weight:400;font-size:.85rem;color:var(--mut)}
+.drill{position:relative;border-top:1px solid var(--line)}
+.drill label{display:flex;gap:12px;padding:12px 44px 12px 14px;cursor:pointer;align-items:flex-start}
+.drill input{width:26px;height:26px;flex:none;accent-color:var(--ac);margin:0}
+.dt{display:block}
+.dt b{display:block}
+.dd{display:block;color:var(--mut);font-size:.92rem}
+.drill{box-shadow:inset 5px 0 0 var(--cc,transparent)}
+summary{box-shadow:inset 5px 0 0 var(--cc,transparent)}
+
+.x{position:absolute;right:8px;top:8px;background:none;color:var(--mut);font-size:1.3rem;line-height:1;padding:4px 9px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}
+.f{display:grid;gap:10px}
+input[type=text],select,textarea{width:100%;font:inherit;padding:9px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+textarea{min-height:70px;resize:vertical}
+.msg{min-height:1.3em;color:var(--mut);font-size:.9rem;margin:0}
+.tot{font-weight:700;font-size:1.1rem;margin:0 0 8px}
+#sum ol{margin:8px 0;padding-left:22px}
+#sum li{margin:5px 0}
+.mut{color:var(--mut);margin:0}
+.pi{display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:9px 0 9px 14px;box-shadow:inset 5px 0 0 var(--cc,transparent);border-top:1px solid var(--line)}
+.pi:first-of-type{border-top:0}
+.pi label{flex:1 1 160px;display:flex;gap:10px;align-items:center;cursor:pointer}
+.pi input{width:26px;height:26px;accent-color:var(--ac);margin:0;flex:none}
+.pi small{display:block;color:var(--mut)}
+.mvr{padding:0 14px 10px 52px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.drill.ed{padding:12px 14px}
+.f{grid-template-columns:minmax(0,1fr)}
+.f>*{min-width:0}
+.drill.ed input,.drill.ed textarea{width:100%;max-width:100%;height:auto;padding:9px 10px}
+.drill.ed textarea{min-height:90px}
+.drill.ed .ctl{justify-content:flex-start;flex-wrap:wrap}
+.drill.ed{display:block;width:100%;max-width:100%;overflow:hidden}
+.drill.ed .ef{display:block;width:100%;max-width:100%}
+.drill.ed .ef>input,.drill.ed .ef>textarea{display:block;width:100%;max-width:100%;min-width:0;box-sizing:border-box;margin:0 0 10px}
+:root{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+input,select,textarea,button{box-sizing:border-box}
+.ep{padding:12px 14px}
+.ml{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--mut)}
+.drill input.mi,.pi input.mi{width:5.2em;height:auto;flex:none;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;margin:0}
+.bk{margin-top:12px}
+.sv{display:flex;gap:8px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.svt{flex:1;min-width:0}
+.svt small{display:block;color:var(--mut)}
+.sv button{flex:none}
+.xr{display:flex;flex-wrap:wrap;gap:8px}
+.xr button{padding:6px 12px}
+#xbox textarea,#lbox textarea{min-height:110px;margin-bottom:8px;font-size:.85rem}
+.bk+.bk{margin-left:8px}
+.lh{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:8px}
+.lh .ctl{margin:0 0 10px}
+.lh button{padding:5px 10px;font-size:.9rem}
+.gr{flex:none;cursor:grab;touch-action:none;user-select:none;color:var(--mut);font-size:1.5rem;line-height:1;padding:2px 4px}
+.gr:active{cursor:grabbing}
+#prog .pi.drag{position:relative;z-index:5;background:var(--card);opacity:.96;box-shadow:inset 5px 0 0 var(--cc,var(--ac)),0 6px 18px rgba(0,0,0,.3)}
+#prog .pi.ov-t{box-shadow:inset 5px 0 0 var(--cc,var(--ac)),0 -3px 0 var(--ac)}
+#prog .pi.ov-b{box-shadow:inset 5px 0 0 var(--cc,var(--ac)),0 3px 0 var(--ac)}
+.pi.brk{background:rgba(209,32,42,.17);border-radius:8px;padding:9px 10px;margin:4px 0;box-shadow:inset 4px 0 0 var(--ac)}
+.mvr select{width:auto;max-width:100%;font-size:.85rem;padding:4px 8px}
+.pi.on b{text-decoration:line-through;text-decoration-thickness:2px}
+.mv{background:none;color:var(--mut);border:1px solid var(--line);padding:4px 9px;font-size:.95rem}
+.sc{max-width:760px;margin:8px auto 0;padding-top:8px;border-top:1px solid rgba(255,255,255,.22);display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.tm2{display:flex;flex-direction:column;align-items:center;gap:2px}
+.sk{display:flex;align-items:center;gap:8px}
+.sc .sn{width:5.5em;background:transparent;color:inherit;border:0;border-bottom:1px dashed rgba(255,255,255,.5);border-radius:0;padding:1px 4px;font-size:.85rem;font-weight:700;text-align:center}
+.sb{width:36px;height:36px;padding:0;border-radius:50%;font-size:1.4rem;line-height:1;background:var(--ac);color:var(--acfg)}
+.sb.m{background:transparent;color:inherit;border:1px solid currentColor}
+.sv2{min-width:2ch;text-align:center;font:700 2rem/1 "Bahnschrift","DIN Alternate","Arial Narrow","Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums}
+.sr{padding:5px 10px;font-size:.85rem;color:inherit}
+.sc[hidden]{display:none}
+.sct{display:block;margin-top:4px;padding:4px 10px;font-size:.85rem;max-width:12em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:inherit}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd">
+    <div><div class="lbl">Time now</div><div class="num" id="clock">--:--</div><button class="b2 sct" id="sct" aria-expanded="true" aria-controls="sc">Scores ▾</button></div>
+    <div class="tm">
+      <div class="lbl">Stopwatch <span id="count" hidden="">0 run</span></div>
+      <div class="num" id="timer">00:00</div>
+      <div class="ctl"><button class="b1" id="tgl">Start</button><button class="b2" id="rst">Reset</button></div>
+    </div>
+  </div>
+<div class="sc" id="sc">
+    <div class="tm2"><input type="text" class="sn" id="na" value="A" maxlength="14" aria-label="Team A name"><div class="sk"><button class="sb m" id="am" aria-label="Subtract one point from team A">−</button><span class="sv2" id="av">0</span><button class="sb" id="ap" aria-label="Add one point to team A">+</button></div></div>
+    <div class="tm2"><input type="text" class="sn" id="nb" value="B" maxlength="14" aria-label="Team B name"><div class="sk"><button class="sb m" id="bm" aria-label="Subtract one point from team B">−</button><span class="sv2" id="bv">0</span><button class="sb" id="bp" aria-label="Add one point to team B">+</button></div></div>
+    <button class="b2 sr" id="sr">Reset scores</button>
+  </div>
+</header>
+<main>
+  <h2 style="margin-top:4px">Session program</h2>
+  <div class="panel" id="prog"></div>
+
+  <h2>Saved programs</h2>
+  <div class="panel f">
+    <input type="text" id="svn" placeholder="Name this program, e.g. Tuesday shooting night" maxlength="60" aria-label="Program name">
+    <button class="b1" id="svb">Save current program</button>
+    <p class="msg" id="svm" role="status"></p>
+    <div id="svl"></div>
+    <div class="xr">
+      <button class="b2" id="xe">Export to file</button>
+      <button class="b2" id="xi">Import from file</button>
+      <button class="b2" id="xt">Copy or paste text</button>
+      <input type="file" id="xf" accept=".json,application/json,text/plain" hidden="">
+    </div>
+    <div id="xbox" hidden="">
+      <textarea id="xa" aria-label="Export or import text" placeholder="Your export text appears here to copy. To import, paste exported text here."></textarea>
+      <button class="b2" id="xg">Import pasted text</button>
+    </div>
+    <p class="msg" id="xm" role="status"></p>
+  </div>
+
+  <div class="lh"><h2>Drill library</h2><div class="ctl"><button class="b2" id="ca">Collapse all</button><button class="b2" id="ea">Expand all</button></div></div>
+  <div id="list"></div>
+  <div id="rest" style="margin:4px 0 0"></div>
+
+  <h2>Add your own drill</h2>
+  <div class="panel f">
+    <input type="text" id="nn" placeholder="Drill name" maxlength="80" aria-label="Drill name">
+    <select id="nc" aria-label="Section"></select>
+    <textarea id="nd" placeholder="Short description (optional)" maxlength="400" aria-label="Description"></textarea>
+    <button class="b1" id="add">Add drill</button>
+    <p class="msg" id="msg" role="status"></p>
+  </div>
+
+  <h2>Add a section</h2>
+  <div class="panel f">
+    <input type="text" id="sn" placeholder="Section name, e.g. Out-of-bounds plays" maxlength="40" aria-label="Section name">
+    <button class="b1" id="sb">Add section</button>
+    <p class="msg" id="sm" role="status"></p>
+  </div>
+
+  <h2>Share your drill library</h2>
+  <div class="panel f">
+    <p class="mut">Export every drill in your library, or import another coach’s library. Imported drills are added to yours, and any you already have are skipped.</p>
+    <div class="xr">
+      <button class="b2" id="le">Export library to file</button>
+      <button class="b2" id="li">Import library from file</button>
+      <button class="b2" id="lt">Copy or paste text</button>
+      <button class="b2" id="pe">Save library as web page</button>
+      <button class="b1" id="ps">Save library into this page</button>
+      <input type="file" id="lf" accept=".json,application/json,text/plain" hidden="">
+    </div>
+    <div id="lbox" hidden="">
+      <textarea id="la" aria-label="Library export or import text" placeholder="Your library export text appears here to copy. To import, paste exported library text here."></textarea>
+      <button class="b2" id="lg">Import pasted text</button>
+    </div>
+    <p class="msg" id="lm" role="status"></p>
+  </div>
+
+  <h2>Summary of drills run</h2>
+  <div class="panel" id="sum"></div>
+</main>
+<script id="app">
+const SRCHTML='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+const SEED={"custom":[{"cat":"Shooting","name":"Egg-beater","desc":"Two lines under the basket, passing to shooter and then the passer runs around the shooter, curling around to the other side.  Start in close for layups, move to block, then elbow, then 3's if desired.  Also add shot fake and drive if desired."},{"cat":"Offensive sets","name":"Practice 1","desc":""},{"cat":"Offensive sets","name":"Practice 2","desc":""},{"cat":"Offensive sets","name":"Practice \"Box\"","desc":""},{"cat":"Defensive sets","name":"Practice 2-2-1 Press","desc":""},{"cat":"Warm-up","name":"High knees","desc":"Jog to half way/end of court with high knees"},{"cat":"Warm-up","name":"Butt kicks","desc":"Jog to half way/end of court while kicking your butt with your foot"},{"cat":"Shooting","name":"2 line shooting","desc":"One line on base, one on wing.  Base player runs along base to mid-range, receives pass from wing and shoots.  Wing player, after passing, runs past free throw line and receives pass from the next person on the baseline."},{"cat":"Defense","name":"Pitter-Patter","desc":"Players pitter patter and slide whichever way coach points.\n30 seconds each time."},{"cat":"Offense","name":"Contended Layups","desc":"One player on each block.  Coach passes to one player who takes one bounch and goes up for a strong layup.  When coach passes, the one who doesn't receive the ball jumps across and contends the shot."},{"cat":"Ball handling","name":"Dribbling pushing","desc":"Two players, one pushing against the others shoulders while they dribble from one side to the other."},{"cat":"Competitive play","name":"No Dribble - Netball","desc":"3on3, 4on4, even 3on4 with no dribble.  This encourages movement, passing and cutting."},{"cat":"Competitive play","name":"3 on 3, 4 on 4, 5 on 5.","desc":""},{"cat":"Shooting","name":"3 on 2 half court","desc":"3 players dribble to halfway, two defenders move to the key.  Play 3 on 2.  When defenders get the ball, another player jumps in from the baseline to join them dribbling up to halfway and then repeat."},{"cat":"Shooting","name":"Rack 'em up","desc":"Line up behind 3 point line.  Everyone starts with 3 points.  Everyone shoots one shot.  For every make, one is added to the 'rack' and the next person in line has to make it or loses that many points.  If they get to 0 then a half court shot gets them back in with 1 point.\n\nFor younger teams, put them around the key or midrange."},{"cat":"Offensive sets","name":"Practice Press Break","desc":""}],"sections":["Offensive sets","Defensive sets","Competitive play"],"moved":{"Warm-up|Layup lines":"Shooting","Shooting|3 on 2 half court":"Competitive play"},"edits":{"Offensive sets|Practice 2":{"name":"Practice \"2\"","desc":""},"Offensive sets|Practice 1":{"name":"Practice \"1\"","desc":""},"Warm-up|Ball slaps and wraps":{"name":"Finger taps","desc":"Tap the ball from side to side using just your fingertips.  Start at waist, move down to knees, move up to shoulders, head then reaching up high."},"Competitive play|No Dribble - Netball":{"name":"No Dribble - Netball","desc":"3on3, 4on4, even 3on4 with no dribble.  This encourages movement, passing and cutting.  Add 1 dribble, 2 dribbles etc as you wish."},"Offense|Contended Layups":{"name":"Contested Layups","desc":"One player on each block.  Coach passes to one player who takes one bounch and goes up for a strong layup.  When coach passes, the one who doesn't receive the ball jumps across and contends the shot."},"Rebounding|Tip drill":{"name":"Tip drill","desc":"Tip the ball off the backboard continuously without catching, then jump to secure it. Builds timing and hands.  Do it with the team running in from the free-throw line."}},"removed":[],"saved":[],"mins":{"Warm-up|Dynamic stretch lines":1,"Warm-up|Ball slaps and wraps":1,"Warm-up|Partner mirror stretch":1,"Warm-up|High knees":1,"Warm-up|Butt kicks":1,"Ball handling|Two-ball dribbling":3,"Ball handling|Stationary dribble series":3,"Shooting|2 line shooting":5,"Ball handling|Cone weave":3,"Ball handling|Dribble tag":4,"Ball handling|Full-court speed dribble":2,"Ball handling|Dribbling pushing":3,"Warm-up|Layup lines":4,"Shooting|Form shooting":4,"Shooting|Mikan drill":3,"Shooting|Five-spot shooting":5,"Shooting|Catch and shoot":5,"Shooting|Egg-beater":5,"Shooting|Rack 'em up":10,"Passing|Partner chest and bounce passes":4,"Passing|Wall passing":3,"Passing|Three-man weave":4,"Passing|Give and go":4,"Offense|Triple-threat series":5,"Offense|Finishing at the rim":4,"Offense|Closeout attacks 1-on-1":5,"Offense|Pick and roll 2-on-2":5,"Offense|Five-out motion":5,"Offense|Contended Layups":5,"Defense|Defensive slides":5,"Defense|Closeout drill":5,"Defense|Mirror drill":4,"Defense|Shell drill":5,"Defense|Deny the wing":5,"Defense|Pitter-Patter":5,"Rebounding|Box-out drill":5,"Rebounding|Tip drill":4,"Rebounding|Rebound and outlet":4,"Rebounding|3-on-3 put-backs":5,"Conditioning|Suicide sprints":3,"Conditioning|17s":6,"Conditioning|Line jumps":3,"Conditioning|Core finisher":2,"Offensive sets|Practice 1":5,"Offensive sets|Practice 2":5,"Offensive sets|Practice \"Box\"":5,"Defensive sets|Practice 2-2-1 Press":5,"Competitive play|No Dribble - Netball":5,"Competitive play|3 on 3, 4 on 4, 5 on 5.":5,"Shooting|3 on 2 half court":5}};//SEEDLINE
+const BASECATS=["Warm-up","Ball handling","Shooting","Passing","Offense","Defense","Rebounding","Conditioning"];let CATS=[...BASECATS];
+const BASE=[
+["Warm-up","Dynamic stretch lines","Baseline to baseline: high knees, butt kicks, walking lunges with a twist, carioca and backpedal. About 5 minutes."],
+["Warm-up","Ball slaps and wraps","Slap the ball hard with both hands, then wrap it around the head, waist and each leg. 30 seconds each, no looking down."],
+["Warm-up","Layup lines","Two lines at game speed. Alternate right-hand and left-hand layups, driving off the correct foot and finishing high off the glass."],
+["Warm-up","Partner mirror stretch","Pairs face each other and copy each other’s movements, from arm circles to leg swings. Gets the body loose and the brain switched on."],
+["Ball handling","Stationary dribble series","Pound dribbles, crossovers, between the legs and behind the back, 30 seconds each. Eyes up, stay low, dribble hard."],
+["Ball handling","Two-ball dribbling","Dribble two balls together, then alternating, then walk the length of the court. Builds weak-hand control."],
+["Ball handling","Cone weave","Five cones 2 metres apart. Weave with crossovers, between the legs and behind the back, then attack the rim after the last cone."],
+["Ball handling","Dribble tag","Everyone dribbles inside the half court and tries to knock away other balls while protecting their own. Lose your ball and you’re out."],
+["Ball handling","Full-court speed dribble","Sprint to half court, hesitation move, then explode to the far end. Repeat with the other hand."],
+["Shooting","Form shooting","One hand, close to the basket: elbow under the ball, full follow-through. Make 10 from each of 3 spots, then step back."],
+["Shooting","Mikan drill","Continuous layups alternating sides under the basket. Aim for 20 makes with each hand, using soft touch off the glass."],
+["Shooting","Five-spot shooting","Five spots around the arc. Stay at each spot until you make 3, then move on. Track total shots to see improvement."],
+["Shooting","Catch and shoot","A partner passes while the shooter gets feet ready before the catch, steps in and shoots. 10 shots from each spot."],
+["Shooting","Free throw routine","Use the same routine every shot. Shoot 10, then sprint and shoot 2 at a time to practise under fatigue."],
+["Passing","Partner chest and bounce passes","Stand 3 metres apart. Step into every pass, snap the wrists and give a target with the hands."],
+["Passing","Wall passing","Pass against a wall for 30 seconds each: chest, bounce, overhead and one-handed. Catch with soft hands."],
+["Passing","Three-man weave","Three lines run the full court, passing and cutting behind the receiver, finishing with a layup. Keep spacing and talk."],
+["Passing","Give and go","Pass to a partner, cut hard to the basket, take the return pass and finish. Cut to the ball side and sell the fake."],
+["Offense","Triple-threat series","Catch in a triple-threat stance, jab-step, read the defender, then shoot, drive or pass."],
+["Offense","Finishing at the rim","Euro step, reverse layup and floater from both sides. Aim for 5 makes of each, finishing through contact."],
+["Offense","Closeout attacks 1-on-1","Defender closes out from the lane. Attack the first dribble to shoot or drive. Swap roles after each rep."],
+["Offense","Pick and roll 2-on-2","Ball handler uses the screen while the screener rolls or pops. Both read the defence and work on timing."],
+["Offense","2-on-1 and 3-on-2 fast break","Attackers outnumber the defenders and look for the open layup. Defenders then turn around and attack the other way."],
+["Offense","Five-out motion","Five players spaced around the arc: pass, cut and fill open spots. Focus on spacing and making quick decisions."],
+["Defense","Defensive slides","Slide baseline to baseline in a low stance without crossing the feet. 30-second intervals, hands active."],
+["Defense","Closeout drill","Sprint from the lane to the shooter with short choppy steps, high hand, then slide to stop the drive."],
+["Defense","Mirror drill","Defender mirrors a ball handler’s movements inside a 3-metre box. No reaching, move the feet first."],
+["Defense","Shell drill","4-on-4 at the perimeter: jump to the ball, help-side positioning and constant talk. Rotate on each pass."],
+["Defense","Deny the wing","Defender denies the pass to the wing with an arm in the passing lane, forcing a backdoor cut that they must read."],
+["Rebounding","Box-out drill","Pairs under the basket while a coach shoots. Find your player, make contact, pivot and rebound with two hands."],
+["Rebounding","Tip drill","Tip the ball off the backboard continuously without catching, then jump to secure it. Builds timing and hands."],
+["Rebounding","Rebound and outlet","Secure the board, chin the ball, pivot away from pressure and make a quick outlet pass to the sideline."],
+["Rebounding","3-on-3 put-backs","Offence only scores on put-backs, and the defence must box out. Rewards effort and positioning."],
+["Conditioning","Suicide sprints","Baseline to free-throw line, half court, far free-throw line, then the far baseline, returning each time. Rest 30 seconds."],
+["Conditioning","17s","Sideline to sideline 17 times in one minute. Rest, then repeat for 3 sets."],
+["Conditioning","Line jumps","Jump side to side and forward and back over a line for 30 seconds. Land softly, stay light on the feet."],
+["Conditioning","Core finisher","Three planks of 30 seconds each, with 20 seconds rest. Keep hips level and breathe."]
+];
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+if(SEED&&['bdr-custom','bdr-sections','bdr-saved','bdr-moved','bdr-edits','bdr-removed','bdr-plan','bdr-mins'].every(k=>store.get(k,null)===null)){
+  [['custom',[]],['sections',[]],['saved',[]],['moved',{}],['edits',{}],['removed',[]],['mins',{}]].forEach(p=>store.set('bdr-'+p[0],SEED[p[0]]||p[1]))}
+let custom=store.get('bdr-custom',[]),moved=store.get('bdr-moved',{}),edits=store.get('bdr-edits',{}),editing=null,sections=store.get('bdr-sections',[]),done=store.get('bdr-done',{}),plan=store.get('bdr-plan',[]),mins=store.get('bdr-mins',{}),removed=store.get('bdr-removed',[]),tm=store.get('bdr-timer',{acc:0,start:null}),closed=new Set(),armed=false;CATS=[...BASECATS,...sections];
+const $=s=>document.querySelector(s),pad=n=>String(n).padStart(2,'0');
+function h(t,p,...k){const e=document.createElement(t);for(const a in p||{}){if(a==='class')e.className=p[a];else if(a.startsWith('on'))e.addEventListener(a.slice(2),p[a]);else if(a.includes('-'))e.setAttribute(a,p[a]);else e[a]=p[a]}k.flat().forEach(c=>e.append(c));return e}
+const fmt=ms=>{const s=Math.floor(ms/1000),hh=Math.floor(s/3600);return(hh?hh+':':'')+pad(Math.floor(s%3600/60))+':'+pad(s%60)};
+const fmtMs=ms=>{const t=Math.floor(ms),s=Math.floor(t/1000),hh=Math.floor(s/3600);return(hh?hh+':':'')+pad(Math.floor(s%3600/60))+':'+pad(s%60)+'.'+String(t%1000).padStart(3,'0')};
+const clk=t=>new Date(t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+const elapsed=()=>tm.acc+(tm.start?Date.now()-tm.start:0);
+const all=()=>[...BASE.map(d=>({id:d[0]+'|'+d[1],cat:d[0],name:d[1],desc:d[2]})),...custom.map(d=>({...d,id:d.cat+'|'+d.name,custom:1}))].map(d=>({...d,cat:moved[d.id]||d.cat,...(edits[d.id]||{})})).filter(d=>!removed.includes(d.id));
+const key=d=>d.id;
+function setT(e,t){if(e.textContent!==t)e.textContent=t}
+function tick(){setT($('#clock'),clk(Date.now()));setT($('#timer'),fmtMs(elapsed()));setT($('#tgl'),tm.start?'Pause':(tm.acc?'Resume':'Start'))}
+const PAL=["#2f6fdb","#f08c00","#2e9e5b","#8a4fd6","#12a4a4","#d6459d","#c9a400","#6c7a89","#7cb518","#4c5bd4","#1c9ad6","#a0612b"];
+const catColor=c=>PAL[Math.max(0,CATS.indexOf(c))%PAL.length];
+const fmtM=m=>{m=Math.round(m*10)/10;const hr=Math.floor(m/60),r=Math.round((m-hr*60)*10)/10;return hr?hr+' h '+r+' min':r+' min'};
+function minInput(d){return h('input',{type:'number',min:0,step:'any',inputMode:'decimal',class:'mi',value:mins[d.id]??'',placeholder:'0','data-id':d.id,'aria-label':'Minutes for '+d.name,oninput:e=>setMin(d,e.target)})}
+function setMin(d,inp){const v=parseFloat(inp.value);if(v>=0)mins[d.id]=v;else delete mins[d.id];store.set('bdr-mins',mins);document.querySelectorAll('input.mi').forEach(x=>{if(x!==inp&&x.getAttribute('data-id')===d.id)x.value=inp.value});totals()}
+function planItems(){const byK={};all().forEach(d=>byK[d.id]=d);return plan.map(k=>k.startsWith('break|')?{id:k,name:'Drink break',cat:'Break',brk:1}:byK[k]).filter(Boolean)}
+function totals(){const it=planItems(),sum=a=>a.reduce((s,d)=>s+(mins[d.id]||0),0),dr=it.filter(d=>!d.brk),dn=it.filter(d=>done[d.id]),a=$('#ptot'),b=$('#pdone');if(a)a.textContent='Program total: '+fmtM(sum(it));if(b)b.textContent=dr.filter(d=>done[d.id]).length+' of '+dr.length+' drills done'+(dn.length?' · '+fmtM(sum(dn))+' completed':'')}
+function startDrag(e,i){
+  if(e.button>0)return;
+  const rows=[...document.querySelectorAll('#prog .pi')],src=rows[i],grip=e.currentTarget,y0=e.clientY;
+  if(!src)return;
+  e.preventDefault();
+  let to=i;
+  grip.setPointerCapture(e.pointerId);src.classList.add('drag');document.body.style.userSelect='none';
+  const clear=()=>rows.forEach(r=>r.classList.remove('ov-t','ov-b'));
+  const mv=ev=>{
+    const dy=ev.clientY-y0;let t=rows.length-1;
+    for(let n=0;n<rows.length;n++){const r=rows[n].getBoundingClientRect(),top=n===i?r.top-dy:r.top;if(ev.clientY<top+r.height/2){t=n;break}}
+    to=t;clear();if(to!==i)rows[to].classList.add(to>i?'ov-b':'ov-t');
+    src.style.transform='translateY('+dy+'px)'};
+  const end=ok=>{grip.removeEventListener('pointermove',mv);grip.removeEventListener('pointerup',up);grip.removeEventListener('pointercancel',cn);document.body.style.userSelect='';src.style.transform='';src.classList.remove('drag');clear();if(ok&&to!==i){const it=plan.splice(i,1)[0];plan.splice(to,0,it);save()}render()};
+  const up=()=>end(true),cn=()=>end(false);
+  grip.addEventListener('pointermove',mv);grip.addEventListener('pointerup',up);grip.addEventListener('pointercancel',cn)}
+let saved=store.get('bdr-saved',[]);
+function saveProgram(){
+  const m=$('#svm'),n=$('#svn').value.trim(),it=planItems();
+  if(!n){m.textContent='Type a name for this program first.';return}
+  if(!it.length){m.textContent='Add some drills to the program before saving.';return}
+  const mm={};it.forEach(d=>{if(mins[d.id]!=null)mm[d.id]=mins[d.id]});
+  const entry={name:n,plan:it.map(d=>d.id),mins:mm},i=saved.findIndex(s=>s.name.toLowerCase()===n.toLowerCase());
+  if(i>=0)saved[i]=entry;else saved.push(entry);
+  store.set('bdr-saved',saved);m.textContent=(i>=0?'Updated \u201c':'Saved \u201c')+n+'\u201d.';$('#svn').value='';renderSaved()}
+function loadProgram(s){
+  const ok=new Set(all().map(d=>d.id)),keep=s.plan.filter(k=>k.startsWith('break|')||ok.has(k));
+  Object.keys(mins).forEach(k=>{if(k.startsWith('break|'))delete mins[k]});
+  done={};plan=keep.slice();keep.forEach(k=>{if(s.mins[k]!=null)mins[k]=s.mins[k]});
+  save();render();
+  const sk=s.plan.length-keep.length;
+  $('#svm').textContent='Loaded \u201c'+s.name+'\u201d'+(sk?' ('+sk+(sk===1?' drill was':' drills were')+' skipped because removed).':'.')}
+function xData(){return JSON.stringify({app:'bdr',version:1,programs:saved,custom,sections,moved,edits,mins:Object.fromEntries(Object.entries(mins).filter(e=>!e[0].startsWith('break|')))},null,1)}
+function xShow(){$('#xbox').hidden=false;$('#xa').value=xData()}
+async function xExport(){
+  const m=$('#xm');
+  if(!saved.length){m.textContent='Save a program first, then export.';return}
+  try{
+    const dl=window.claude?await claude.use('downloads'):null;
+    if(!dl){xShow();m.textContent='Saving a file isn’t available here. Copy the text below instead.';return}
+    await dl.save({filename:'basketball-programs.json',data:xData()});
+    m.textContent='Export saved. On another device, use Import from file.'
+  }catch(e){m.textContent=e&&e.code==='declined'?'Export cancelled.':'The file couldn’t be saved. Use Copy or paste text instead.'}}
+function xImport(txt){
+  const m=$('#xm');let d;
+  try{d=JSON.parse(txt)}catch(e){m.textContent='That doesn’t look like an exported programs file.';return}
+  if(!d||d.app!=='bdr'||!Array.isArray(d.programs)){m.textContent='That doesn’t look like an exported programs file.';return}
+  const S=(x,n)=>typeof x==='string'?x.slice(0,n):'',ks=o=>o&&typeof o==='object'&&!Array.isArray(o)?Object.keys(o).filter(k=>k!=='__proto__'&&k.length<200):[];
+  (Array.isArray(d.sections)?d.sections:[]).slice(0,50).forEach(n=>{n=S(n,40).trim();if(n&&!CATS.some(c=>c.toLowerCase()===n.toLowerCase())){sections.push(n);CATS=[...BASECATS,...sections]}});
+  (Array.isArray(d.custom)?d.custom:[]).slice(0,500).forEach(c=>{if(!c)return;const cat=S(c.cat,40),name=S(c.name,80).trim();if(name&&CATS.includes(cat)&&!custom.some(x=>x.cat===cat&&x.name===name))custom.push({cat,name,desc:S(c.desc,400)})});
+  ks(d.moved).forEach(k=>{if(CATS.includes(d.moved[k]))moved[k]=d.moved[k]});
+  ks(d.edits).forEach(k=>{const e=d.edits[k];if(e&&S(e.name,80).trim())edits[k]={name:S(e.name,80).trim(),desc:S(e.desc,400)}});
+  ks(d.mins).forEach(k=>{const v=Number(d.mins[k]);if(v>=0&&v<10000)mins[k]=v});
+  let n=0;
+  d.programs.slice(0,200).forEach(p=>{
+    const name=p&&S(p.name,60).trim();if(!name||!Array.isArray(p.plan))return;
+    const keep=p.plan.filter(k=>typeof k==='string'&&k.length<200).slice(0,200),mm={};
+    ks(p.mins).forEach(k=>{const v=Number(p.mins[k]);if(v>=0&&v<10000)mm[k]=v});
+    const entry={name,plan:keep,mins:mm},i=saved.findIndex(s=>s.name.toLowerCase()===name.toLowerCase());
+    if(i>=0)saved[i]=entry;else saved.push(entry);n++});
+  store.set('bdr-custom',custom);store.set('bdr-sections',sections);store.set('bdr-moved',moved);store.set('bdr-edits',edits);store.set('bdr-mins',mins);store.set('bdr-saved',saved);
+  fillSel();render();renderSaved();
+  m.textContent='Imported '+n+(n===1?' program.':' programs.')}
+function lData(){return JSON.stringify({app:'bdr-library',version:1,sections:CATS,drills:all().map(d=>({cat:d.cat,name:d.name,desc:d.desc||'',mins:mins[d.id]??null}))},null,1)}
+function lShow(){$('#lbox').hidden=false;$('#la').value=lData()}
+async function lExport(){
+  const m=$('#lm');
+  try{
+    const dl=window.claude?await claude.use('downloads'):null;
+    if(!dl){lShow();m.textContent='Saving a file isn’t available here. Copy the text below instead.';return}
+    await dl.save({filename:'basketball-drill-library.json',data:lData()});
+    m.textContent='Library saved. Share the file so another coach can use Import library from file.'
+  }catch(e){m.textContent=e&&e.code==='declined'?'Export cancelled.':'The file couldn’t be saved. Use Copy or paste text instead.'}}
+function lImport(txt){
+  const m=$('#lm');let d;
+  try{d=JSON.parse(txt)}catch(e){m.textContent='That doesn’t look like an exported drill library.';return}
+  if(!d||d.app!=='bdr-library'||!Array.isArray(d.drills)){m.textContent='That doesn’t look like an exported drill library.';return}
+  const S=(x,n)=>typeof x==='string'?x.slice(0,n):'',addSec=n=>{n=S(n,40).trim();if(!n)return null;const ex=CATS.find(c=>c.toLowerCase()===n.toLowerCase());if(ex)return ex;sections.push(n);CATS=[...BASECATS,...sections];ns++;return n};
+  let ns=0,add=0,skip=0;
+  (Array.isArray(d.sections)?d.sections:[]).slice(0,50).forEach(addSec);
+  d.drills.slice(0,1000).forEach(x=>{
+    if(!x)return;const name=S(x.name,80).trim(),cat=addSec(x.cat);if(!name||!cat)return;
+    const id=cat+'|'+name;
+    if(removed.includes(id)){removed=removed.filter(r=>r!==id);add++;return}
+    if(all().some(y=>y.id===id||(y.cat===cat&&y.name.toLowerCase()===name.toLowerCase()))){skip++;return}
+    custom.push({cat,name,desc:S(x.desc,400)});add++;
+    const v=Number(x.mins);if(x.mins!=null&&v>=0&&v<10000&&mins[id]==null)mins[id]=v});
+  store.set('bdr-custom',custom);store.set('bdr-sections',sections);store.set('bdr-removed',removed);store.set('bdr-mins',mins);
+  fillSel();render();
+  m.textContent='Added '+add+(add===1?' drill':' drills')+(ns?' and '+ns+(ns===1?' section':' sections'):'')+'; skipped '+skip+' you already have.'}
+function buildPage(){
+  const data={custom,sections,moved,edits,removed,saved,mins:Object.fromEntries(Object.entries(mins).filter(e=>!e[0].startsWith('break|')))};
+  const doc=new DOMParser().parseFromString(SRCHTML,'text/html');
+  doc.querySelectorAll('script').forEach(s=>{if(s.id!=='app')s.remove()});
+  doc.querySelectorAll('meta[http-equiv],link[rel=modulepreload],style[id]').forEach(s=>s.remove());
+  const json=JSON.stringify(data).replace(/</g,'\\u003c');
+  return('<!DOCTYPE html>\n'+doc.documentElement.outerHTML).replace(new RegExp('<!'+'-- frame-runtime -->[\\s\\S]*?<!'+'-- /frame-runtime -->','g'),'').replace(new RegExp('const SEED=[^\\n]*//SEEDLINE'),()=>'const SEED='+json+';//SEEDLINE')}
+async function pagePublish(){
+  const m=$('#lm');
+  try{
+    const art=window.claude?await claude.use('artifact'):null;
+    if(!art){m.textContent='Saving into this page isn’t available here. Use Save library as web page instead.';return}
+    m.textContent='Saving your library into this page…';
+    await art.publish(buildPage());
+    m.textContent='Saved. Your library is now part of this page.'
+  }catch(e){const c=e&&e.code;if(c==='conflict')return;m.textContent=(c==='not_writer'||c==='not_granted')?'Only the page’s owner can save into it. Use Save library as web page instead.':'It couldn’t be saved into the page.'}}
+async function pageExport(){
+  const m=$('#lm');
+  try{
+    const html=buildPage();
+    const dl=window.claude?await claude.use('downloads'):null;
+    if(dl){await dl.save({filename:'basketball-drill-runner.html',data:html});m.textContent='Web page saved. Upload it to your own site and your sections and drills will be its starting library.';return}
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download='basketball-drill-runner.html';a.click();m.textContent='Web page saved.'
+  }catch(e){m.textContent=e&&e.code==='declined'?'Save cancelled.':'The web page couldn\u2019t be saved.'}}
+let score=store.get('bdr-score',{a:0,b:0,na:'A',nb:'B'}),scArmed=false,scoreOpen=store.get('bdr-scopen',window.innerWidth>600);
+function paintSc(){const o=scoreOpen,b=$('#sct');$('#sc').hidden=!o;b.setAttribute('aria-expanded',String(o));b.textContent=o?'Scores \u25be':($('#na').value||'A')+' '+(score.a||0)+' \u2013 '+(score.b||0)+' '+($('#nb').value||'B')+' \u25b8'}
+function bump(k,d){score[k]=Math.max(0,(Number(score[k])||0)+d);store.set('bdr-score',score);$('#'+k+'v').textContent=score[k];paintSc()}
+function initScore(){$('#av').textContent=score.a||0;$('#bv').textContent=score.b||0;$('#na').value=score.na&&score.na!=='Us'?score.na:'A';$('#nb').value=score.nb&&score.nb!=='Them'?score.nb:'B';paintSc()}
+function resetScore(){const b=$('#sr');if(!scArmed){scArmed=true;b.textContent='Tap again to reset';setTimeout(()=>{scArmed=false;b.textContent='Reset scores'},3000);return}scArmed=false;b.textContent='Reset scores';score.a=0;score.b=0;store.set('bdr-score',score);initScore()}
+function deleteProgram(i){saved.splice(i,1);store.set('bdr-saved',saved);renderSaved()}
+function renderSaved(){
+  const l=$('#svl');l.replaceChildren();
+  if(!saved.length){l.append(h('p',{class:'mut'},'No saved programs yet. Build a program above, name it and save it to reuse next session.'));return}
+  saved.forEach((s,i)=>{
+    const dr=s.plan.filter(k=>!k.startsWith('break|')).length,tot=s.plan.reduce((a,k)=>a+(s.mins[k]||0),0);
+    l.append(h('div',{class:'sv'},
+      h('span',{class:'svt'},h('b',{},s.name),h('small',{},dr+(dr===1?' drill':' drills')+' \u00b7 '+fmtM(tot))),
+      h('button',{class:'b1',onclick:()=>loadProgram(s)},'Load'),
+      h('button',{class:'mv',title:'Delete saved program','aria-label':'Delete '+s.name,onclick:()=>deleteProgram(i)},'\u00d7')))})}
+let clrArmed=false;
+function clearProgram(){
+  if(!clrArmed){clrArmed=true;const b=$('#clr');if(b)b.textContent='Tap again to clear';setTimeout(()=>{clrArmed=false;const x=$('#clr');if(x)x.textContent='Clear program'},3000);return}
+  clrArmed=false;plan.forEach(k=>{delete done[k];if(k.startsWith('break|'))delete mins[k]});plan=[];save();render()}
+function addBreak(){const k='break|'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);plan.push(k);mins[k]=1;save();render()}
+function save(){store.set('bdr-plan',plan);store.set('bdr-done',done);store.set('bdr-mins',mins)}
+function toggle(d){const k=key(d),i=plan.indexOf(k);if(i<0)plan.push(k);else{plan.splice(i,1);delete done[k];if(k.startsWith('break|'))delete mins[k]}save();render()}
+function runIt(d){const k=key(d);if(done[k])delete done[k];else done[k]={t:Date.now()};save();render()}
+function removeDrill(d){if(d.custom){removeCustom(d);return}removed.push(d.id);plan=plan.filter(k=>k!==d.id);delete done[d.id];store.set('bdr-removed',removed);save();render()}
+function moveDrill(d,c){if(c===d.cat)return;moved[d.id]=c;store.set('bdr-moved',moved);closed.delete(c);render()}
+function saveEdit(d,n,s){n=n.trim();if(!n)return;edits[d.id]={name:n,desc:s.trim()};store.set('bdr-edits',edits);editing=null;render()}
+function move(i,j){if(j<0||j>=plan.length)return;[plan[i],plan[j]]=[plan[j],plan[i]];save();render()}
+function removeCustom(d){custom=custom.filter(c=>c.cat+'|'+c.name!==d.id);delete moved[d.id];delete edits[d.id];store.set('bdr-edits',edits);store.set('bdr-moved',moved);plan=plan.filter(k=>k!==key(d));delete done[key(d)];store.set('bdr-custom',custom);save();render()}
+function render(){
+  const list=$('#list'),drills=all();list.replaceChildren();
+  const rs=$('#rest');rs.replaceChildren();if(removed.length)rs.append(h('button',{class:'b2',onclick:()=>{removed=[];store.set('bdr-removed',removed);render()}},'Restore '+removed.length+' removed '+(removed.length===1?'drill':'drills')));
+  CATS.forEach(c=>{
+    const ds=drills.filter(d=>d.cat===c),n=ds.filter(d=>plan.includes(key(d))).length;
+    const det=h('details',{style:'--cc:'+catColor(c),open:!closed.has(c),class:'cat',ontoggle:e=>{e.target.open?closed.delete(c):closed.add(c)}},
+      h('summary',{},h('span',{},c),h('span',{class:'cn'},n?n+' in program':ds.length+' drills')));
+    ds.forEach(d=>{
+      const k=key(d),cb=h('input',{type:'checkbox',checked:plan.includes(k),onchange:()=>toggle(d)});
+      if(editing===d.id){
+        const ni=h('input',{type:'text',value:d.name,maxLength:80,'aria-label':'Drill name'}),di=h('textarea',{value:d.desc||'',maxLength:400,'aria-label':'Description'});
+        det.append(h('div',{class:'drill ed'},h('div',{class:'ef'},ni,di,h('div',{class:'ctl'},h('button',{class:'b1',onclick:()=>saveEdit(d,ni.value,di.value)},'Save changes'),h('button',{class:'b2',onclick:()=>{editing=null;render()}},'Cancel')))));return}
+      const row=h('div',{class:'drill'+(plan.includes(k)?' on':'')},h('label',{},cb,h('span',{class:'dt'},h('b',{},d.name),h('span',{class:'dd'},d.desc||'No description added.'))));
+      row.append(h('div',{class:'mvr'},h('select',{'aria-label':'Move '+d.name+' to another section',onchange:e=>moveDrill(d,e.target.value)},CATS.map(c=>h('option',{value:c,selected:c===d.cat,textContent:'Section: '+c}))),h('span',{class:'ml'},'Minutes',minInput(d)),h('button',{class:'mv',onclick:()=>{editing=d.id;render()}},'Edit')));
+      row.append(h('button',{class:'x',title:'Remove this drill','aria-label':'Remove '+d.name,onclick:()=>removeDrill(d)},'×'));
+      det.append(row)});
+    if(!ds.length)det.append(h('p',{class:'mut ep'},'No drills yet. Move one here or add a new drill.'));list.append(det)});
+  const byK={};drills.forEach(d=>byK[key(d)]=d);
+  const pg=$('#prog'),items=planItems();pg.replaceChildren();
+  if(!items.length)pg.append(h('p',{class:'mut'},'No drills yet. Tick drills in the library below to build your session.'));
+  else{
+    pg.append(h('p',{class:'tot',id:'ptot'}),h('p',{class:'mut',id:'pdone'}));
+    items.forEach((d,i)=>{const k=key(d);
+      pg.append(h('div',{style:d.brk?'':'--cc:'+catColor(d.cat),class:'pi'+(done[k]?' on':'')+(d.brk?' brk':'')},
+        h('span',{class:'gr',title:'Drag to reorder','aria-hidden':'true',onpointerdown:e=>startDrag(e,i)},'≡'),h('label',{},h('input',{type:'checkbox',checked:!!done[k],onchange:()=>runIt(d)}),h('span',{},h('b',{},d.name),h('small',{},d.cat))),
+        minInput(d),h('button',{class:'mv',title:'Move up','aria-label':'Move '+d.name+' up',onclick:()=>move(i,i-1)},'↑'),
+        h('button',{class:'mv',title:'Move down','aria-label':'Move '+d.name+' down',onclick:()=>move(i,i+1)},'↓'),
+        h('button',{class:'mv',title:'Remove from program','aria-label':'Remove '+d.name,onclick:()=>toggle(d)},'×')))})}
+  pg.append(h('button',{class:'b2 bk',onclick:addBreak},'Add drink break'));
+  if(plan.length)pg.append(h('button',{class:'b2 bk',id:'clr',onclick:clearProgram},clrArmed?'Tap again to clear':'Clear program'));
+  totals();
+  const ran=drills.filter(d=>done[key(d)]).sort((a,b)=>done[key(a)].t-done[key(b)].t),s=$('#sum');
+  s.replaceChildren();$('#count').textContent='· '+ran.length+' run';
+  if(!ran.length){s.append(h('p',{class:'mut'},'Nothing run yet. Tick drills off in your session program as you finish them.'));return}
+  s.append(h('p',{class:'tot'},ran.length+(ran.length===1?' drill':' drills')+' run in '+fmt(elapsed())));
+  const by=CATS.map(c=>[c,ran.filter(d=>d.cat===c).length]).filter(x=>x[1]).map(x=>x[0]+' '+x[1]).join(', ');
+  s.append(h('p',{class:'mut'},'By section: '+by));
+  const ol=h('ol');ran.forEach(d=>ol.append(h('li',{},h('b',{},d.name),' ('+d.cat+'), ticked at '+clk(done[key(d)].t))));
+  s.append(ol)}
+$('#tgl').onclick=()=>{if(tm.start){tm.acc+=Date.now()-tm.start;tm.start=null}else tm.start=Date.now();store.set('bdr-timer',tm);tick()};
+$('#rst').onclick=()=>{
+  
+  tm={acc:0,start:null};store.set('bdr-timer',tm);render();tick()};
+function fillSel(v){const s=$('#nc');s.replaceChildren();CATS.forEach(c=>s.append(h('option',{value:c,textContent:c})));if(v)s.value=v}
+fillSel();
+function addSection(){const m=$('#sm'),n=$('#sn').value.trim();if(!n){m.textContent='Type a section name first.';return}if(CATS.some(c=>c.toLowerCase()===n.toLowerCase())){m.textContent='That section already exists.';return}sections.push(n);store.set('bdr-sections',sections);CATS=[...BASECATS,...sections];$('#sn').value='';m.textContent='Added the section “'+n+'”.';fillSel(n);closed.delete(n);render()}
+function addDrill(){
+  const name=$('#nn').value.trim(),cat=$('#nc').value,desc=$('#nd').value.trim(),m=$('#msg');
+  if(!name){m.textContent='Type a drill name first.';return}
+  if(removed.includes(cat+'|'+name)){removed=removed.filter(x=>x!==cat+'|'+name);store.set('bdr-removed',removed);m.textContent='Restored the original “'+name+'” drill.';render();return}
+  if(all().some(d=>d.name===name&&(d.cat===cat||d.id===cat+'|'+name))){m.textContent='That drill is already in '+cat+'.';return}
+  custom.push({cat,name,desc});store.set('bdr-custom',custom);
+  closed.delete(cat);$('#nn').value='';$('#nd').value='';m.textContent='Added “'+name+'” to '+cat+'.';render()}
+$('#svb').onclick=saveProgram;
+$('#xe').onclick=xExport;$('#xi').onclick=()=>$('#xf').click();
+$('#xf').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{xImport(await f.text())}catch(err){$('#xm').textContent='That file couldn’t be read.'}});
+$('#xt').onclick=()=>{if($('#xbox').hidden)xShow();else $('#xbox').hidden=true};
+$('#xg').onclick=()=>xImport($('#xa').value);
+$('#le').onclick=lExport;$('#li').onclick=()=>$('#lf').click();
+$('#lf').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{lImport(await f.text())}catch(err){$('#lm').textContent='That file couldn’t be read.'}});
+$('#lt').onclick=()=>{if($('#lbox').hidden)lShow();else $('#lbox').hidden=true};
+$('#lg').onclick=()=>lImport($('#la').value);
+$('#pe').onclick=pageExport;$('#ps').onclick=pagePublish;
+$('#am').onclick=()=>bump('a',-1);$('#ap').onclick=()=>bump('a',1);$('#bm').onclick=()=>bump('b',-1);$('#bp').onclick=()=>bump('b',1);$('#sr').onclick=resetScore;
+$('#sct').onclick=()=>{scoreOpen=!scoreOpen;store.set('bdr-scopen',scoreOpen);paintSc()};
+$('#na').addEventListener('input',e=>{score.na=e.target.value;store.set('bdr-score',score);paintSc()});$('#nb').addEventListener('input',e=>{score.nb=e.target.value;store.set('bdr-score',score);paintSc()});$('#svn').addEventListener('keydown',e=>{if(e.key==='Enter')saveProgram()});
+$('#ca').onclick=()=>{CATS.forEach(c=>closed.add(c));render()};$('#ea').onclick=()=>{closed.clear();render()};
+$('#add').onclick=addDrill;$('#sb').onclick=addSection;$('#sn').addEventListener('keydown',e=>{if(e.key==='Enter')addSection()});
+$('#nn').addEventListener('keydown',e=>{if(e.key==='Enter')addDrill()});
+initScore();render();renderSaved();tick();setInterval(tick,50);
+</script></body></html>
