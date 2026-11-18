@@ -98,7 +98,11 @@ input,select,textarea,button{box-sizing:border-box}
 .sb.m{background:transparent;color:inherit;border:1px solid currentColor}
 .sv2{min-width:2ch;text-align:center;font:700 2rem/1 "Bahnschrift","DIN Alternate","Arial Narrow","Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums}
 .sr{padding:5px 10px;font-size:.85rem;color:inherit}
+#xbox button,#lbox button{margin-right:8px;margin-bottom:6px}
 .sc[hidden]{display:none}
+#prog{background:#fff4f2;border:2px solid var(--ac)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #prog{background:#35363c}}
+:root[data-theme="dark"] #prog{background:#35363c}
 .sct{display:block;margin-top:4px;padding:4px 10px;font-size:.85rem;max-width:12em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:inherit}
 </style>
 </head>
@@ -113,8 +117,8 @@ input,select,textarea,button{box-sizing:border-box}
     </div>
   </div>
 <div class="sc" id="sc">
-    <div class="tm2"><input type="text" class="sn" id="na" value="A" maxlength="14" aria-label="Team A name"><div class="sk"><button class="sb m" id="am" aria-label="Subtract one point from team A">−</button><span class="sv2" id="av">0</span><button class="sb" id="ap" aria-label="Add one point to team A">+</button></div></div>
-    <div class="tm2"><input type="text" class="sn" id="nb" value="B" maxlength="14" aria-label="Team B name"><div class="sk"><button class="sb m" id="bm" aria-label="Subtract one point from team B">−</button><span class="sv2" id="bv">0</span><button class="sb" id="bp" aria-label="Add one point to team B">+</button></div></div>
+    <div class="tm2"><input type="text" class="sn" id="na" value="Light" maxlength="14" aria-label="Team A name"><div class="sk"><button class="sb m" id="am" aria-label="Subtract one point from team A">−</button><span class="sv2" id="av">0</span><button class="sb" id="ap" aria-label="Add one point to team A">+</button></div></div>
+    <div class="tm2"><input type="text" class="sn" id="nb" value="Dark" maxlength="14" aria-label="Team B name"><div class="sk"><button class="sb m" id="bm" aria-label="Subtract one point from team B">−</button><span class="sv2" id="bv">0</span><button class="sb" id="bp" aria-label="Add one point to team B">+</button></div></div>
     <button class="b2 sr" id="sr">Reset scores</button>
   </div>
 </header>
@@ -136,6 +140,7 @@ input,select,textarea,button{box-sizing:border-box}
     </div>
     <div id="xbox" hidden="">
       <textarea id="xa" aria-label="Export or import text" placeholder="Your export text appears here to copy. To import, paste exported text here."></textarea>
+      <button class="b2" id="xc">Copy text</button>
       <button class="b2" id="xg">Import pasted text</button>
     </div>
     <p class="msg" id="xm" role="status"></p>
@@ -174,6 +179,7 @@ input,select,textarea,button{box-sizing:border-box}
     </div>
     <div id="lbox" hidden="">
       <textarea id="la" aria-label="Library export or import text" placeholder="Your library export text appears here to copy. To import, paste exported library text here."></textarea>
+      <button class="b2" id="lc">Copy text</button>
       <button class="b2" id="lg">Import pasted text</button>
     </div>
     <p class="msg" id="lm" role="status"></p>
@@ -288,7 +294,7 @@ async function xExport(){
     if(!dl){xShow();m.textContent='Saving a file isn’t available here. Copy the text below instead.';return}
     await dl.save({filename:'basketball-programs.json',data:xData()});
     m.textContent='Export saved. On another device, use Import from file.'
-  }catch(e){m.textContent=e&&e.code==='declined'?'Export cancelled.':'The file couldn’t be saved. Use Copy or paste text instead.'}}
+  }catch(e){const c=e&&e.code;if(c==='declined'){m.textContent='Export cancelled.';return}xShow();m.textContent='The file couldn’t be saved'+(c?' ('+c+')':'')+'. Copy the text below instead.'}}
 function xImport(txt){
   const m=$('#xm');let d;
   try{d=JSON.parse(txt)}catch(e){m.textContent='That doesn’t look like an exported programs file.';return}
@@ -318,7 +324,7 @@ async function lExport(){
     if(!dl){lShow();m.textContent='Saving a file isn’t available here. Copy the text below instead.';return}
     await dl.save({filename:'basketball-drill-library.json',data:lData()});
     m.textContent='Library saved. Share the file so another coach can use Import library from file.'
-  }catch(e){m.textContent=e&&e.code==='declined'?'Export cancelled.':'The file couldn’t be saved. Use Copy or paste text instead.'}}
+  }catch(e){const c=e&&e.code;if(c==='declined'){m.textContent='Export cancelled.';return}lShow();m.textContent='The file couldn’t be saved'+(c?' ('+c+')':'')+'. Copy the text below instead.'}}
 function lImport(txt){
   const m=$('#lm');let d;
   try{d=JSON.parse(txt)}catch(e){m.textContent='That doesn’t look like an exported drill library.';return}
@@ -360,11 +366,16 @@ async function pageExport(){
     if(dl){await dl.save({filename:'basketball-drill-runner.html',data:html});m.textContent='Web page saved. Upload it to your own site and your sections and drills will be its starting library.';return}
     const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([html],{type:'text/html'}));a.download='basketball-drill-runner.html';a.click();m.textContent='Web page saved.'
   }catch(e){m.textContent=e&&e.code==='declined'?'Save cancelled.':'The web page couldn\u2019t be saved.'}}
-let score=store.get('bdr-score',{a:0,b:0,na:'A',nb:'B'}),scArmed=false,scoreOpen=store.get('bdr-scopen',window.innerWidth>600);
-function paintSc(){const o=scoreOpen,b=$('#sct');$('#sc').hidden=!o;b.setAttribute('aria-expanded',String(o));b.textContent=o?'Scores \u25be':($('#na').value||'A')+' '+(score.a||0)+' \u2013 '+(score.b||0)+' '+($('#nb').value||'B')+' \u25b8'}
+let score=store.get('bdr-score',{a:0,b:0,na:'Light',nb:'Dark'}),scArmed=false,scoreOpen=store.get('bdr-scopen',window.innerWidth>600);
+function paintSc(){const o=scoreOpen,b=$('#sct');$('#sc').hidden=!o;b.setAttribute('aria-expanded',String(o));b.textContent=o?'Scores \u25be':'Scores \u25b8'}
 function bump(k,d){score[k]=Math.max(0,(Number(score[k])||0)+d);store.set('bdr-score',score);$('#'+k+'v').textContent=score[k];paintSc()}
-function initScore(){$('#av').textContent=score.a||0;$('#bv').textContent=score.b||0;$('#na').value=score.na&&score.na!=='Us'?score.na:'A';$('#nb').value=score.nb&&score.nb!=='Them'?score.nb:'B';paintSc()}
+function initScore(){$('#av').textContent=score.a||0;$('#bv').textContent=score.b||0;$('#na').value=score.na&&!['Us','A'].includes(score.na)?score.na:'Light';$('#nb').value=score.nb&&!['Them','B'].includes(score.nb)?score.nb:'Dark';paintSc()}
 function resetScore(){const b=$('#sr');if(!scArmed){scArmed=true;b.textContent='Tap again to reset';setTimeout(()=>{scArmed=false;b.textContent='Reset scores'},3000);return}scArmed=false;b.textContent='Reset scores';score.a=0;score.b=0;store.set('bdr-score',score);initScore()}
+async function copyBox(a,m){
+  const t=$(a),say=x=>{$(m).textContent=x},fall='Text selected. Press and hold it, then choose Copy.';
+  t.focus();t.select();t.setSelectionRange(0,t.value.length);
+  try{await navigator.clipboard.writeText(t.value);say('Copied to the clipboard.')}
+  catch(e){try{say(document.execCommand('copy')?'Copied to the clipboard.':fall)}catch(e2){say(fall)}}}
 function deleteProgram(i){saved.splice(i,1);store.set('bdr-saved',saved);renderSaved()}
 function renderSaved(){
   const l=$('#svl');l.replaceChildren();
@@ -446,10 +457,12 @@ $('#xe').onclick=xExport;$('#xi').onclick=()=>$('#xf').click();
 $('#xf').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{xImport(await f.text())}catch(err){$('#xm').textContent='That file couldn’t be read.'}});
 $('#xt').onclick=()=>{if($('#xbox').hidden)xShow();else $('#xbox').hidden=true};
 $('#xg').onclick=()=>xImport($('#xa').value);
+$('#xc').onclick=()=>copyBox('#xa','#xm');
 $('#le').onclick=lExport;$('#li').onclick=()=>$('#lf').click();
 $('#lf').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;try{lImport(await f.text())}catch(err){$('#lm').textContent='That file couldn’t be read.'}});
 $('#lt').onclick=()=>{if($('#lbox').hidden)lShow();else $('#lbox').hidden=true};
 $('#lg').onclick=()=>lImport($('#la').value);
+$('#lc').onclick=()=>copyBox('#la','#lm');
 $('#pe').onclick=pageExport;$('#ps').onclick=pagePublish;
 $('#am').onclick=()=>bump('a',-1);$('#ap').onclick=()=>bump('a',1);$('#bm').onclick=()=>bump('b',-1);$('#bp').onclick=()=>bump('b',1);$('#sr').onclick=resetScore;
 $('#sct').onclick=()=>{scoreOpen=!scoreOpen;store.set('bdr-scopen',scoreOpen);paintSc()};
